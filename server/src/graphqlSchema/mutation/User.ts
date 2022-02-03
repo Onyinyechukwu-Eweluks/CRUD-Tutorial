@@ -1,6 +1,7 @@
 import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 import { Users } from "../../dbEntities/users";
 import { UserType } from "../typeDefinetions/Users";
+import { MessageType } from "../typeDefinetions/Messages";
 import * as bcrypt from "bcrypt";
 
 export const CREATE_USERS = {
@@ -20,14 +21,14 @@ export const CREATE_USERS = {
 };
 
 export const DELETE_USER = {
-  type: UserType,
+  type: MessageType,
   args: {
     id: { type: GraphQLID },
   },
   async resolve(parent: any, args: any) {
     const { id } = args;
-    let deletedUser = await Users.delete({ id: id });
-    return "Success";
+    await Users.delete({ id: id });
+    return { successful: true, message: "Deleted Successfully" };
   },
 };
 
@@ -64,7 +65,7 @@ export const UPDATE_PASSWORD = {
     const userPassword = user?.password;
 
     if (oldPassword === userPassword) {
-      await Users.update(
+      return await Users.update(
         { username: username },
         {
           username: username,
